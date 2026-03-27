@@ -424,6 +424,61 @@ fn structured_filter_supports_exact_and_numeric_range() {
 }
 
 #[test]
+fn generation_rollover_keeps_vectors_searchable_after_restart() {
+    let dir = temp_dir();
+    {
+        let db = Database::open(&dir).unwrap();
+        db.create_collection(CreateCollectionRequest {
+            name: "docs".to_string(),
+            dimension: 8,
+            max_cluster_size: Some(8),
+            graph_degree: Some(4),
+        })
+        .unwrap();
+
+        let mut batch = Vec::new();
+        for i in 0..80 {
+            let mut vector = vec![0.0; 8];
+            vector[i % 8] = 1.0;
+            batch.push(VectorRecord {
+                id: format!("doc-{i}"),
+                vector,
+                metadata: HashMap::from([(
+                    "category".to_string(),
+                    if i % 2 == 0 { "even" } else { "odd" }.to_string(),
+                )]),
+            });
+        }
+        db.insert_vectors("docs", batch).unwrap();
+
+        let fetched = db.fetch_vector("docs", "doc-79").unwrap();
+        assert!(fetched.is_some());
+    }
+
+    let reopened = Database::open(&dir).unwrap();
+    let fetched = reopened.fetch_vector("docs", "doc-79").unwrap();
+    assert!(fetched.is_some());
+
+    let result = reopened
+        .search(
+            "docs",
+            SearchRequest {
+                vector: vec![0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+                k: 5,
+                filter: MetadataFilter::ExactMap(HashMap::from([(
+                    "category".to_string(),
+                    "odd".to_string(),
+                )])),
+                entry_points: Some(4),
+                ef_search: Some(16),
+                probe_clusters: Some(8),
+            },
+        )
+        .unwrap();
+    assert!(!result.hits.is_empty());
+}
+
+#[test]
 fn diagnostics_expose_generation_and_compaction_state() {
     let dir = temp_dir();
     let db = Database::open(&dir).unwrap();

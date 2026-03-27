@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LithicDB | Disk-First Vector Infrastructure</title>
   <meta name="description" content="LithicDB is a disk-first vector database in Rust with low-memory ANN search, online updates, metadata filtering, durable storage, and benchmarkable recall.">
+  <meta property="og:title" content="LithicDB | Disk-First Vector Infrastructure">
+  <meta property="og:description" content="A Rust vector database built around disk-first payload storage, graph routing, quantized ANN search, metadata filtering, and benchmarkable recall.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://deadsec07.github.io/lithicdb/">
+  <meta property="og:image" content="https://deadsec07.github.io/lithicdb/assets/social-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LithicDB | Disk-First Vector Infrastructure">
+  <meta name="twitter:description" content="A Rust vector database with disk-first payloads, ANN routing, online updates, filtering, and benchmarkable recall.">
+  <meta name="twitter:image" content="https://deadsec07.github.io/lithicdb/assets/social-preview.png">
   <style>
     :root {
       --bg: #f4efe6;
@@ -128,6 +139,7 @@
         <a href="#why">Why it exists</a>
         <a href="#architecture">Architecture</a>
         <a href="#compare">Compare</a>
+        <a href="#roadmap">Roadmap</a>
         <a href="#api">API</a>
         <a href="https://github.com/deadsec07/lithicdb">GitHub</a>
       </div>
@@ -188,26 +200,26 @@
     <section class="evidence-grid">
       <article class="chart-card">
         <div class="kicker">Evidence block</div>
-        <h2>Representative smoke benchmark</h2>
-        <p>A prior LithicDB smoke run on this repo showed the ANN path materially faster than brute-force cosine while preserving useful recall on a filtered search workload.</p>
+        <h2>Verified benchmark runner</h2>
+        <p>The benchmark runner now completes cleanly after the generation-storage fix. This latest verification run is intentionally small and reproducible, proving end-to-end ANN versus brute-force measurement from the repo itself.</p>
         <div class="chart-wrap">
           <div class="chart-row">
             <div class="chart-label">ANN ms</div>
             <div class="track"><div class="fill-a"></div></div>
-            <div>4.23</div>
+            <div>1.36</div>
           </div>
           <div class="chart-row">
             <div class="chart-label">Brute ms</div>
             <div class="track"><div class="fill-b"></div></div>
-            <div>12.15</div>
+            <div>0.83</div>
           </div>
           <div class="chart-row">
             <div class="chart-label">Recall@5</div>
             <div class="track"><div class="fill-r"></div></div>
-            <div>0.73</div>
+            <div>1.00</div>
           </div>
         </div>
-        <p class="metric-note">Benchmark shape: 5k vectors, 64 dimensions, 20 queries, top-5 retrieval. The repo also includes a larger benchmark driver for 100k-vector scale tests and recall/latency comparison.</p>
+        <p class="metric-note">Verification shape: 1k vectors, 32 dimensions, 5 queries, top-5 retrieval. The repo also includes the larger benchmark driver for 100k-vector scale tests, recall, latency, and memory comparison.</p>
       </article>
 
       <article class="section">
@@ -312,6 +324,46 @@
             <li>Exact metadata filtering plus numeric range support.</li>
             <li>Brute-force cosine and ANN comparison live in the same repo for honest evaluation.</li>
           </ul>
+        </article>
+      </section>
+
+
+      <section class="split" id="roadmap">
+        <article class="section">
+          <h2>Roadmap</h2>
+          <p>LithicDB is already a credible single-node alpha. The next product milestones are about making it operationally sharper and commercially clearer.</p>
+          <ul class="dense-list">
+            <li><strong>Beta kernel:</strong> segment-based persistence, incremental compaction, and stronger benchmark tooling.</li>
+            <li><strong>Search quality:</strong> better quantization, smarter routing heuristics, and tuning surfaces for recall/latency tradeoffs.</li>
+            <li><strong>Operational hardening:</strong> richer diagnostics, backup discipline, and safer admin controls.</li>
+            <li><strong>Commercial layer:</strong> hosted packaging, auth, quotas, and multi-tenant controls around the single-node core.</li>
+          </ul>
+        </article>
+
+        <article class="table-card">
+          <h2>Near-term build plan</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th>Focus</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Now</td>
+                <td>Single-node alpha with disk-first ANN, WAL, compaction, filters, benchmarks, and release assets.</td>
+              </tr>
+              <tr>
+                <td>Next</td>
+                <td>Incremental segments, stronger benchmark suites, and higher-quality ANN tuning.</td>
+              </tr>
+              <tr>
+                <td>Later</td>
+                <td>Hosted control plane, replication story, and enterprise-grade operational safety.</td>
+              </tr>
+            </tbody>
+          </table>
         </article>
       </section>
 

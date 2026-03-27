@@ -1,0 +1,25 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#F6EFE4"/>
+  <rect x="34" y="34" width="1132" height="562" rx="36" fill="#FFF9F0" stroke="#D8C8B5" stroke-width="2"/>
+  <circle cx="1065" cy="118" r="108" fill="#E6D1B7" fill-opacity="0.55"/>
+  <circle cx="130" cy="82" r="82" fill="#EBCFB9" fill-opacity="0.7"/>
+  <rect x="86" y="88" width="76" height="76" rx="22" fill="#F5EFE5" stroke="#C9B8A3" stroke-width="2"/>
+  <path d="M105 138L125 104L136 121L148 105L148 138H105Z" fill="#BF5B2C"/>
+  <path d="M119 138L138 115L148 126V138H119Z" fill="#176B63"/>
+  <circle cx="148" cy="105" r="6" fill="#D9C17A"/>
+  <path d="M105 145H148" stroke="#1F1A17" stroke-width="4" stroke-linecap="round"/>
+  <text x="184" y="137" fill="#1F1A17" font-family="Courier New, monospace" font-size="34" letter-spacing="6">LITHICDB</text>
+  <text x="88" y="244" fill="#1F1A17" font-family="Georgia, serif" font-size="74" font-weight="700">Disk-first vector infrastructure</text>
+  <text x="88" y="322" fill="#5F564D" font-family="Georgia, serif" font-size="32">Graph-routed ANN search, quantized payloads, metadata filters,</text>
+  <text x="88" y="362" fill="#5F564D" font-family="Georgia, serif" font-size="32">online updates, and durable single-node storage in Rust.</text>
+  <rect x="88" y="420" width="318" height="82" rx="22" fill="#FFF3E8" stroke="#E1C2A8"/>
+  <rect x="432" y="420" width="318" height="82" rx="22" fill="#EEF8F6" stroke="#B7D8D2"/>
+  <rect x="776" y="420" width="318" height="82" rx="22" fill="#FBF3D9" stroke="#E0D29A"/>
+  <text x="112" y="456" fill="#8A5A38" font-family="Courier New, monospace" font-size="18">PAYLOAD POSTURE</text>
+  <text x="112" y="488" fill="#1F1A17" font-family="Georgia, serif" font-size="34">Disk-first</text>
+  <text x="456" y="456" fill="#176B63" font-family="Courier New, monospace" font-size="18">SEARCH MODEL</text>
+  <text x="456" y="488" fill="#1F1A17" font-family="Georgia, serif" font-size="34">ANN + rerank</text>
+  <text x="800" y="456" fill="#9C8740" font-family="Courier New, monospace" font-size="18">PRODUCT STATUS</text>
+  <text x="800" y="488" fill="#1F1A17" font-family="Georgia, serif" font-size="34">Single-node alpha</text>
+  <text x="88" y="555" fill="#5F564D" font-family="Courier New, monospace" font-size="20">github.com/deadsec07/lithicdb</text>
+</svg>

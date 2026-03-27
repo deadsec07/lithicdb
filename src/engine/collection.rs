@@ -672,6 +672,7 @@ impl Collection {
         self.active_paths = next_paths;
         self.generation_catalog.write = next_manifest.clone();
         self.generation_catalog.readable.push(next_manifest.clone());
+        self.persist()?;
         write_storage_manifest(&self.paths.current_file, &next_manifest)?;
         write_generation_catalog(&self.paths.generations_file, &self.generation_catalog)?;
         Ok(())
@@ -798,13 +799,16 @@ impl Collection {
                 .unwrap_or(false);
             if empty {
                 self.clusters.remove(&cluster_id);
-            } else if let Some(cluster) = self.clusters.get_mut(&cluster_id) {
-                recalc_centroid(
-                    cluster,
-                    self.manifest.dimension,
-                    &self.docs,
-                    &mut self.raw_file,
-                )?;
+            } else {
+                let members = self
+                    .clusters
+                    .get(&cluster_id)
+                    .map(|cluster| cluster.members.clone())
+                    .unwrap_or_default();
+                let centroid = self.average_centroid(&members)?;
+                if let Some(cluster) = self.clusters.get_mut(&cluster_id) {
+                    cluster.centroid = centroid;
+                }
             }
         }
         let cluster_ids: Vec<u32> = self.clusters.keys().copied().collect();
@@ -900,13 +904,12 @@ impl Collection {
         let should_split = {
             let cluster = self.clusters.get_mut(&cluster_id).unwrap();
             cluster.members.push(doc_id);
-            recalc_centroid(
-                cluster,
-                self.manifest.dimension,
-                &self.docs,
-                &mut self.raw_file,
-            )?;
-            cluster.members.len() > self.manifest.max_cluster_size
+            let members = cluster.members.clone();
+            let should_split = members.len() > self.manifest.max_cluster_size;
+            let centroid = self.average_centroid(&members)?;
+            let cluster = self.clusters.get_mut(&cluster_id).unwrap();
+            cluster.centroid = centroid;
+            should_split
         };
 
         if should_split {
@@ -967,18 +970,8 @@ impl Collection {
             if group_a.is_empty() || group_b.is_empty() {
                 break;
             }
-            centroid_a = average_centroid(
-                &group_a,
-                self.manifest.dimension,
-                &self.docs,
-                &mut self.raw_file,
-            )?;
-            centroid_b = average_centroid(
-                &group_b,
-                self.manifest.dimension,
-                &self.docs,
-                &mut self.raw_file,
-            )?;
+            centroid_a = self.average_centroid(&group_a)?;
+            centroid_b = self.average_centroid(&group_b)?;
         }
 
         if group_a.is_empty() || group_b.is_empty() {
@@ -1086,39 +1079,27 @@ impl Collection {
         allowed.map(|set| set.contains(&doc_id)).unwrap_or(true) && filter.matches(&doc.metadata)
     }
 
-    fn read_raw(&mut self, doc_id: u64) -> Result<Vec<f32>> {
+    fn read_raw(&self, doc_id: u64) -> Result<Vec<f32>> {
         let doc = self.docs.get(&doc_id).context("document missing")?;
-        read_f32_vector(&mut self.raw_file, doc.raw_offset, self.manifest.dimension)
+        let manifest = self
+            .manifest_for_generation(&doc.generation)
+            .context("document generation not found")?;
+        let mut raw_file = open_rw(&self.paths.active_paths(manifest).raw_vectors_file)?;
+        read_f32_vector(&mut raw_file, doc.raw_offset, self.manifest.dimension)
     }
-}
 
-fn average_centroid(
-    members: &[u64],
-    dimension: usize,
-    docs: &HashMap<u64, DocumentRecord>,
-    raw_file: &mut File,
-) -> Result<Vec<f32>> {
-    let mut centroid = vec![0.0; dimension];
-    for doc_id in members {
-        let doc = docs.get(doc_id).context("member missing")?;
-        let vector = read_f32_vector(raw_file, doc.raw_offset, dimension)?;
-        for (idx, value) in vector.iter().enumerate() {
-            centroid[idx] += value;
+    fn average_centroid(&self, members: &[u64]) -> Result<Vec<f32>> {
+        let mut centroid = vec![0.0; self.manifest.dimension];
+        for doc_id in members {
+            let vector = self.read_raw(*doc_id)?;
+            for (idx, value) in vector.iter().enumerate() {
+                centroid[idx] += value;
+            }
         }
+        let count = members.len() as f32;
+        for value in &mut centroid {
+            *value /= count.max(1.0);
+        }
+        Ok(normalize(&centroid))
     }
-    let count = members.len() as f32;
-    for value in &mut centroid {
-        *value /= count.max(1.0);
-    }
-    Ok(normalize(&centroid))
-}
-
-fn recalc_centroid(
-    cluster: &mut ClusterNode,
-    dimension: usize,
-    docs: &HashMap<u64, DocumentRecord>,
-    raw_file: &mut File,
-) -> Result<()> {
-    cluster.centroid = average_centroid(&cluster.members, dimension, docs, raw_file)?;
-    Ok(())
 }
