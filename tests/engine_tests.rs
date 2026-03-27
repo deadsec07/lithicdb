@@ -16,7 +16,10 @@ fn temp_dir() -> std::path::PathBuf {
         .unwrap()
         .as_nanos();
     let seq = TEST_COUNTER.fetch_add(1, Ordering::Relaxed);
-    path.push(format!("lithicdb-test-{}-{nanos}-{seq}", std::process::id()));
+    path.push(format!(
+        "lithicdb-test-{}-{nanos}-{seq}",
+        std::process::id()
+    ));
     path
 }
 
@@ -261,7 +264,11 @@ fn wal_checksum_detects_corruption() {
     }
 
     let wal_path = dir.join("docs").join("wal.bin");
-    let mut wal = OpenOptions::new().read(true).write(true).open(wal_path).unwrap();
+    let mut wal = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(wal_path)
+        .unwrap();
     wal.seek(SeekFrom::Start(12)).unwrap();
     wal.write_all(&[0xFF]).unwrap();
     wal.flush().unwrap();
@@ -326,7 +333,10 @@ fn compaction_publishes_new_generation_manifest() {
     let catalog: lithicdb::models::types::GenerationCatalog =
         bincode::deserialize(&generations_bytes).unwrap();
     assert_eq!(catalog.write.generation, current.generation);
-    assert!(catalog.readable.iter().any(|manifest| manifest.generation == current.generation));
+    assert!(catalog
+        .readable
+        .iter()
+        .any(|manifest| manifest.generation == current.generation));
     assert!(catalog.retired.is_empty());
 }
 

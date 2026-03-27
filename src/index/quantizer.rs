@@ -28,4 +28,3 @@ pub fn cosine(query_normalized: &[f32], vector_normalized: &[f32]) -> f32 {
         .map(|(a, b)| a * b)
         .sum()
 }
-

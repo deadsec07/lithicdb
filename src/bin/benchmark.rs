@@ -50,7 +50,10 @@ fn main() -> Result<()> {
     for i in 0..args.vectors {
         let vector = random_vector(&mut rng, args.dimension);
         let mut metadata = HashMap::new();
-        metadata.insert("category".to_string(), categories[i % categories.len()].to_string());
+        metadata.insert(
+            "category".to_string(),
+            categories[i % categories.len()].to_string(),
+        );
         batch.push(VectorRecord {
             id: format!("doc-{i}"),
             vector,
@@ -102,7 +105,8 @@ fn main() -> Result<()> {
         )?;
         brute_latency_ms += brute_start.elapsed().as_secs_f64() * 1000.0;
 
-        let brute_ids: std::collections::HashSet<_> = brute.hits.iter().map(|hit| hit.id.clone()).collect();
+        let brute_ids: std::collections::HashSet<_> =
+            brute.hits.iter().map(|hit| hit.id.clone()).collect();
         let overlap = ann
             .hits
             .iter()
@@ -117,9 +121,19 @@ fn main() -> Result<()> {
     println!("dimension: {}", args.dimension);
     println!("queries: {}", args.queries);
     println!("build_seconds: {:.3}", build_elapsed.as_secs_f64());
-    println!("ann_avg_latency_ms: {:.3}", ann_latency_ms / args.queries as f64);
-    println!("brute_avg_latency_ms: {:.3}", brute_latency_ms / args.queries as f64);
-    println!("avg_recall_at_{}: {:.4}", args.k, recall_sum / args.queries as f64);
+    println!(
+        "ann_avg_latency_ms: {:.3}",
+        ann_latency_ms / args.queries as f64
+    );
+    println!(
+        "brute_avg_latency_ms: {:.3}",
+        brute_latency_ms / args.queries as f64
+    );
+    println!(
+        "avg_recall_at_{}: {:.4}",
+        args.k,
+        recall_sum / args.queries as f64
+    );
     println!("disk_bytes: {}", disk_bytes);
     println!(
         "memory_estimate_bytes: {}",

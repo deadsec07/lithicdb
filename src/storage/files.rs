@@ -122,7 +122,8 @@ pub fn write_state<T: Serialize>(path: &Path, state: &T) -> Result<()> {
     let bytes = bincode::serialize(state).context("serialize snapshot")?;
     let tmp_path = path.with_extension("tmp");
     let mut file = File::create(&tmp_path).context("create temp state snapshot")?;
-    file.write_all(&bytes).context("write temp state snapshot")?;
+    file.write_all(&bytes)
+        .context("write temp state snapshot")?;
     file.sync_all().context("sync temp state snapshot")?;
     std::fs::rename(&tmp_path, path).context("rename temp state snapshot")?;
     Ok(())

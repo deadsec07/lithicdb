@@ -7,10 +7,13 @@ use crate::models::api::{
     SearchResponse,
 };
 use axum::extract::{Path, State};
+use axum::http::HeaderMap;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
-use axum::{routing::{get, post}, Json, Router};
-use axum::http::HeaderMap;
+use axum::{
+    routing::{get, post},
+    Json, Router,
+};
 use serde_json::json;
 use std::sync::Arc;
 
@@ -25,11 +28,17 @@ pub fn router(db: Arc<Database>) -> Router {
         .route("/healthz", get(health))
         .route("/collections", post(create_collection))
         .route("/collections/:name/vectors", post(insert_vectors))
-        .route("/collections/:name/vectors/:id", get(fetch_vector).delete(delete_vector))
+        .route(
+            "/collections/:name/vectors/:id",
+            get(fetch_vector).delete(delete_vector),
+        )
         .route("/collections/:name/search", post(search_vectors))
         .route("/collections/:name/compact", post(compact_collection))
         .route("/collections/:name/stats", get(collection_stats))
-        .route("/collections/:name/diagnostics", get(collection_diagnostics))
+        .route(
+            "/collections/:name/diagnostics",
+            get(collection_diagnostics),
+        )
         .route("/admin/collections/:name/backup", post(backup_collection))
         .route("/admin/collections/restore", post(restore_collection))
         .with_state(AppState {
@@ -86,7 +95,11 @@ async fn fetch_vector(
     let Some((vector, metadata)) = state.db.fetch_vector(&name, &id)? else {
         return Err(ApiError::not_found("vector not found"));
     };
-    Ok(Json(FetchVectorResponse { id, vector, metadata }))
+    Ok(Json(FetchVectorResponse {
+        id,
+        vector,
+        metadata,
+    }))
 }
 
 async fn search_vectors(

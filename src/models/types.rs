@@ -21,7 +21,10 @@ pub struct StructuredMetadataFilter {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum MetadataPredicate {
-    Eq { field: String, value: String },
+    Eq {
+        field: String,
+        value: String,
+    },
     Range {
         field: String,
         #[serde(default)]
@@ -52,14 +55,18 @@ impl MetadataFilter {
                 .must
                 .iter()
                 .filter_map(|predicate| match predicate {
-                    MetadataPredicate::Eq { field, value } => Some((field.as_str(), value.as_str())),
+                    MetadataPredicate::Eq { field, value } => {
+                        Some((field.as_str(), value.as_str()))
+                    }
                     MetadataPredicate::Range { .. } => None,
                 })
                 .collect(),
         }
     }
 
-    pub fn range_predicates(&self) -> Vec<(&str, Option<f64>, Option<f64>, Option<f64>, Option<f64>)> {
+    pub fn range_predicates(
+        &self,
+    ) -> Vec<(&str, Option<f64>, Option<f64>, Option<f64>, Option<f64>)> {
         match self {
             Self::Empty | Self::ExactMap(_) => Vec::new(),
             Self::Structured(filter) => filter
@@ -82,8 +89,13 @@ impl MetadataFilter {
     pub fn matches(&self, metadata: &Metadata) -> bool {
         match self {
             Self::Empty => true,
-            Self::ExactMap(map) => map.iter().all(|(key, value)| metadata.get(key) == Some(value)),
-            Self::Structured(filter) => filter.must.iter().all(|predicate| predicate.matches(metadata)),
+            Self::ExactMap(map) => map
+                .iter()
+                .all(|(key, value)| metadata.get(key) == Some(value)),
+            Self::Structured(filter) => filter
+                .must
+                .iter()
+                .all(|predicate| predicate.matches(metadata)),
         }
     }
 }

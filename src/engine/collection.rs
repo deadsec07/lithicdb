@@ -2,14 +2,14 @@ use crate::index::graph::top_n_centroids;
 use crate::index::quantizer::{cosine, cosine_quantized, normalize, quantize_normalized};
 use crate::models::api::VectorRecord;
 use crate::models::types::{
-    ActiveSegmentManifest, ClusterNode, CollectionManifest, CollectionSnapshot, CollectionStats,
-    CollectionDiagnostics, DocumentRecord, GenerationCatalog, MetadataFilter, SearchHit,
-    SearchResult, SearchStats, WalOp,
+    ActiveSegmentManifest, ClusterNode, CollectionDiagnostics, CollectionManifest,
+    CollectionSnapshot, CollectionStats, DocumentRecord, GenerationCatalog, MetadataFilter,
+    SearchHit, SearchResult, SearchStats, WalOp,
 };
 use crate::storage::files::{
     append_f32_vector, append_i8_vector, append_log_entry, default_active_manifest, file_len,
-    generation_manifest, open_rw, read_f32_vector, read_i8_vector, read_log_entries, read_state,
-    read_generation_catalog, read_storage_manifest, truncate_file, write_generation_catalog,
+    generation_manifest, open_rw, read_f32_vector, read_generation_catalog, read_i8_vector,
+    read_log_entries, read_state, read_storage_manifest, truncate_file, write_generation_catalog,
     write_state, write_storage_manifest, ActiveSegmentPaths, CollectionPaths,
 };
 use anyhow::{anyhow, bail, Context, Result};
@@ -240,15 +240,14 @@ impl Collection {
         let _lease = self.begin_read();
         let normalized = normalize(&query);
         let allowed = self.resolve_filter_candidates(&filter);
-        let selected_clusters =
-            top_n_centroids(
-                &self.clusters,
-                self.entry_cluster,
-                &normalized,
-                entry_points,
-                ef_search,
-                probe_clusters,
-            );
+        let selected_clusters = top_n_centroids(
+            &self.clusters,
+            self.entry_cluster,
+            &normalized,
+            entry_points,
+            ef_search,
+            probe_clusters,
+        );
         let mut quant_files: HashMap<String, File> = HashMap::new();
         let mut raw_files: HashMap<String, File> = HashMap::new();
 
@@ -266,7 +265,9 @@ impl Collection {
                             let manifest = self
                                 .manifest_for_generation(&doc.generation)
                                 .context("candidate generation not found")?;
-                            entry.insert(open_rw(&self.paths.active_paths(manifest).quant_vectors_file)?)
+                            entry.insert(open_rw(
+                                &self.paths.active_paths(manifest).quant_vectors_file,
+                            )?)
                         }
                     };
                     let encoded =
@@ -289,7 +290,9 @@ impl Collection {
                         let manifest = self
                             .manifest_for_generation(&doc.generation)
                             .context("filtered generation not found")?;
-                        entry.insert(open_rw(&self.paths.active_paths(manifest).quant_vectors_file)?)
+                        entry.insert(open_rw(
+                            &self.paths.active_paths(manifest).quant_vectors_file,
+                        )?)
                     }
                 };
                 let encoded =
@@ -312,7 +315,9 @@ impl Collection {
                     let manifest = self
                         .manifest_for_generation(&doc.generation)
                         .context("rerank generation not found")?;
-                    entry.insert(open_rw(&self.paths.active_paths(manifest).raw_vectors_file)?)
+                    entry.insert(open_rw(
+                        &self.paths.active_paths(manifest).raw_vectors_file,
+                    )?)
                 }
             };
             let vector = read_f32_vector(raw_file, doc.raw_offset, self.manifest.dimension)?;
@@ -363,7 +368,9 @@ impl Collection {
                     let manifest = self
                         .manifest_for_generation(&doc.generation)
                         .context("brute force generation not found")?;
-                    entry.insert(open_rw(&self.paths.active_paths(manifest).raw_vectors_file)?)
+                    entry.insert(open_rw(
+                        &self.paths.active_paths(manifest).raw_vectors_file,
+                    )?)
                 }
             };
             let vector = read_f32_vector(raw_file, doc.raw_offset, self.manifest.dimension)?;
@@ -473,11 +480,19 @@ impl Collection {
         }
         for entry in wal_entries {
             match entry {
-                WalOp::Insert { id, vector, metadata } => {
+                WalOp::Insert {
+                    id,
+                    vector,
+                    metadata,
+                } => {
                     if self.external_to_doc.contains_key(&id) {
                         continue;
                     }
-                    self.insert_one(VectorRecord { id, vector, metadata })?;
+                    self.insert_one(VectorRecord {
+                        id,
+                        vector,
+                        metadata,
+                    })?;
                 }
                 WalOp::Delete { id } => {
                     let _ = self.apply_delete(&id)?;
@@ -613,7 +628,13 @@ impl Collection {
             if retired.generation == self.active_manifest.generation {
                 continue;
             }
-            if lease_state.active.get(&retired.generation).copied().unwrap_or(0) > 0 {
+            if lease_state
+                .active
+                .get(&retired.generation)
+                .copied()
+                .unwrap_or(0)
+                > 0
+            {
                 if !lease_state
                     .pending_cleanup
                     .iter()
@@ -665,7 +686,12 @@ impl Collection {
                 (self.generation_catalog.write.generation == generation)
                     .then_some(&self.generation_catalog.write)
             })
-            .or_else(|| self.generation_catalog.retired.iter().find(|manifest| manifest.generation == generation))
+            .or_else(|| {
+                self.generation_catalog
+                    .retired
+                    .iter()
+                    .find(|manifest| manifest.generation == generation)
+            })
     }
 
     fn begin_read(&self) -> ReadLease<'_> {
@@ -683,9 +709,7 @@ impl Collection {
         let mut doc_ids: Vec<u64> = self
             .docs
             .iter()
-            .filter_map(|(doc_id, doc)| {
-                (!doc.deleted && full_rewrite).then_some(*doc_id)
-            })
+            .filter_map(|(doc_id, doc)| (!doc.deleted && full_rewrite).then_some(*doc_id))
             .collect();
         doc_ids.sort_unstable();
 
@@ -775,14 +799,22 @@ impl Collection {
             if empty {
                 self.clusters.remove(&cluster_id);
             } else if let Some(cluster) = self.clusters.get_mut(&cluster_id) {
-                recalc_centroid(cluster, self.manifest.dimension, &self.docs, &mut self.raw_file)?;
+                recalc_centroid(
+                    cluster,
+                    self.manifest.dimension,
+                    &self.docs,
+                    &mut self.raw_file,
+                )?;
             }
         }
         let cluster_ids: Vec<u32> = self.clusters.keys().copied().collect();
         for cluster_id in cluster_ids {
             self.rewire_cluster(cluster_id);
         }
-        if self.entry_cluster.is_some_and(|entry| !self.clusters.contains_key(&entry)) {
+        if self
+            .entry_cluster
+            .is_some_and(|entry| !self.clusters.contains_key(&entry))
+        {
             self.entry_cluster = self.clusters.keys().next().copied();
         }
         Ok(())
@@ -868,7 +900,12 @@ impl Collection {
         let should_split = {
             let cluster = self.clusters.get_mut(&cluster_id).unwrap();
             cluster.members.push(doc_id);
-            recalc_centroid(cluster, self.manifest.dimension, &self.docs, &mut self.raw_file)?;
+            recalc_centroid(
+                cluster,
+                self.manifest.dimension,
+                &self.docs,
+                &mut self.raw_file,
+            )?;
             cluster.members.len() > self.manifest.max_cluster_size
         };
 
@@ -930,8 +967,18 @@ impl Collection {
             if group_a.is_empty() || group_b.is_empty() {
                 break;
             }
-            centroid_a = average_centroid(&group_a, self.manifest.dimension, &self.docs, &mut self.raw_file)?;
-            centroid_b = average_centroid(&group_b, self.manifest.dimension, &self.docs, &mut self.raw_file)?;
+            centroid_a = average_centroid(
+                &group_a,
+                self.manifest.dimension,
+                &self.docs,
+                &mut self.raw_file,
+            )?;
+            centroid_b = average_centroid(
+                &group_b,
+                self.manifest.dimension,
+                &self.docs,
+                &mut self.raw_file,
+            )?;
         }
 
         if group_a.is_empty() || group_b.is_empty() {
@@ -949,7 +996,8 @@ impl Collection {
     }
 
     fn rewire_cluster(&mut self, cluster_id: u32) {
-        let Some(target_centroid) = self.clusters.get(&cluster_id).map(|c| c.centroid.clone()) else {
+        let Some(target_centroid) = self.clusters.get(&cluster_id).map(|c| c.centroid.clone())
+        else {
             return;
         };
 
