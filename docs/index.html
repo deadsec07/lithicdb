@@ -3,303 +3,570 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LithicDB | Disk-First Vector Database</title>
-  <meta name="description" content="LithicDB is a disk-first vector database built for low-memory ANN search, filtering, online updates, and practical single-node deployment.">
+  <title>LithicDB | Disk-First Vector Infrastructure</title>
+  <meta name="description" content="LithicDB is a disk-first vector database in Rust with low-memory ANN search, online updates, metadata filtering, durable storage, and benchmarkable recall.">
   <style>
     :root {
-      --bg: #0e141b;
-      --panel: #15202b;
-      --panel-alt: #1c2b39;
-      --text: #eff6fb;
-      --muted: #a5b7c6;
-      --accent: #4dd0a8;
-      --accent-2: #72a8ff;
-      --border: rgba(255,255,255,0.08);
+      --bg: #f4efe6;
+      --ink: #1f1a17;
+      --muted: #5f564d;
+      --panel: rgba(255, 250, 242, 0.88);
+      --panel-strong: #fffaf2;
+      --line: rgba(31, 26, 23, 0.12);
+      --line-strong: rgba(31, 26, 23, 0.2);
+      --accent: #bf5b2c;
+      --accent-2: #176b63;
+      --accent-3: #d9c17a;
+      --shadow: 0 24px 70px rgba(65, 40, 20, 0.12);
     }
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      color: var(--ink);
+      font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
       background:
-        radial-gradient(circle at top left, rgba(77,208,168,0.18), transparent 28%),
-        radial-gradient(circle at top right, rgba(114,168,255,0.16), transparent 24%),
-        linear-gradient(180deg, #0a1016, var(--bg));
-      color: var(--text);
+        radial-gradient(circle at top left, rgba(191, 91, 44, 0.18), transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(23, 107, 99, 0.14), transparent 28%),
+        linear-gradient(180deg, #faf6ee 0%, #f4efe6 38%, #efe7d8 100%);
     }
     a { color: inherit; }
-    .wrap {
-      max-width: 1140px;
+    .shell {
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 32px 20px 72px;
+      padding: 28px 20px 84px;
     }
     .nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 16px;
-      margin-bottom: 52px;
+      padding: 10px 0 28px;
     }
     .brand {
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 14px;
-      letter-spacing: 0.16em;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: "Courier New", monospace;
       text-transform: uppercase;
-      color: var(--accent);
+      letter-spacing: 0.16em;
+      font-size: 13px;
+    }
+    .brand-mark {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 0 6px rgba(191, 91, 44, 0.09);
     }
     .nav-links {
       display: flex;
-      gap: 14px;
+      gap: 10px;
       flex-wrap: wrap;
     }
     .nav-links a,
     .button {
       text-decoration: none;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.45);
       padding: 10px 14px;
       border-radius: 999px;
-      color: var(--text);
-      transition: 150ms ease;
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
     }
     .nav-links a:hover,
     .button:hover {
-      border-color: rgba(255,255,255,0.16);
       transform: translateY(-1px);
+      border-color: var(--line-strong);
+      background: rgba(255, 255, 255, 0.7);
     }
     .hero {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 28px;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 22px;
       align-items: stretch;
-      margin-bottom: 28px;
+      margin-bottom: 22px;
     }
     .hero-copy,
-    .hero-card,
+    .hero-aside,
     .section,
-    .metric,
-    .code {
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      backdrop-filter: blur(8px);
+    .signal,
+    .code,
+    .quote,
+    .table-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
     }
     .hero-copy {
       padding: 34px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-copy::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -50px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(191, 91, 44, 0.18), transparent 65%);
+      pointer-events: none;
     }
     .eyebrow {
-      color: var(--accent);
-      font-size: 13px;
+      margin-bottom: 16px;
+      color: var(--accent-2);
+      font-family: "Courier New", monospace;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      margin-bottom: 16px;
-      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
     }
     h1 {
-      margin: 0 0 16px;
-      font-size: clamp(40px, 6vw, 72px);
-      line-height: 0.96;
-      letter-spacing: -0.04em;
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(42px, 7vw, 84px);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
     }
     .lead {
-      margin: 0;
-      color: var(--muted);
-      font-size: 18px;
-      line-height: 1.6;
+      margin: 18px 0 0;
       max-width: 720px;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.65;
     }
-    .actions {
+    .hero-actions {
       display: flex;
-      gap: 14px;
+      gap: 12px;
       flex-wrap: wrap;
       margin-top: 28px;
     }
     .button.primary {
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      color: #071116;
-      border: none;
-      font-weight: 700;
+      color: #fff8f2;
+      border-color: transparent;
+      background: linear-gradient(120deg, var(--accent), #d9793f);
     }
-    .hero-card {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
+    .button.secondary {
+      background: linear-gradient(120deg, rgba(23, 107, 99, 0.1), rgba(23, 107, 99, 0.03));
     }
-    .stack {
-      display: grid;
-      gap: 12px;
-    }
-    .stack-item {
-      padding: 14px 16px;
-      border-radius: 16px;
-      background: var(--panel-alt);
-      border: 1px solid var(--border);
-    }
-    .stack-item strong {
-      display: block;
-      margin-bottom: 4px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-      margin: 18px 0 28px;
-    }
-    .metric {
-      padding: 24px;
-    }
-    .metric .value {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .metric p,
-    .section p,
-    .section li {
+    .hero-footnote {
+      margin-top: 24px;
       color: var(--muted);
+      font-size: 14px;
       line-height: 1.6;
     }
-    .two-col {
+    .hero-aside {
+      padding: 24px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .aside-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.34));
+      border: 1px solid var(--line);
+    }
+    .aside-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+    .aside-card span {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+    .signals {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .signal {
+      padding: 22px;
+    }
+    .signal .label {
+      font-family: "Courier New", monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .signal .value {
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .signal p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+    .split {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 18px;
-      margin-bottom: 18px;
     }
-    .section {
-      padding: 26px;
+    .section,
+    .table-card,
+    .quote,
+    .code {
+      padding: 28px;
     }
     h2 {
       margin: 0 0 14px;
-      font-size: 26px;
+      font-size: 30px;
+      letter-spacing: -0.03em;
     }
-    ul {
-      padding-left: 18px;
+    h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+    p,
+    li {
+      color: var(--muted);
+      line-height: 1.68;
+      font-size: 16px;
+    }
+    .dense-list {
+      display: grid;
+      gap: 10px;
+      padding-left: 20px;
       margin: 0;
     }
-    .code {
-      padding: 22px;
+    .diagram {
+      display: grid;
+      gap: 12px;
       margin-top: 18px;
+    }
+    .diagram-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+    .diagram-label {
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent-2);
+    }
+    .diagram-bar {
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(23,107,99,0.09), rgba(191,91,44,0.08));
+      color: var(--ink);
+      line-height: 1.5;
+      font-size: 15px;
+    }
+    .table-card table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    .table-card th,
+    .table-card td {
+      text-align: left;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      font-size: 15px;
+    }
+    .table-card th {
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-top: 0;
+    }
+    .code {
+      background: linear-gradient(180deg, #1c1917, #11100f);
+      border-color: rgba(255,255,255,0.08);
+      color: #f7efe2;
       overflow: auto;
-      font-family: "IBM Plex Mono", monospace;
-      color: #cde7ff;
+      font-family: "Courier New", monospace;
       font-size: 14px;
       line-height: 1.7;
       white-space: pre-wrap;
     }
-    .footer {
-      margin-top: 28px;
-      color: var(--muted);
-      font-size: 14px;
+    .quote {
+      background: linear-gradient(135deg, rgba(217,193,122,0.3), rgba(255,250,242,0.76));
     }
-    @media (max-width: 900px) {
+    .cta {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .footer {
+      margin-top: 24px;
+      color: var(--muted);
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+    }
+    @media (max-width: 980px) {
       .hero,
-      .grid,
-      .two-col {
+      .signals,
+      .split,
+      .cta {
+        grid-template-columns: 1fr;
+      }
+      .diagram-row {
         grid-template-columns: 1fr;
       }
       .hero-copy,
-      .hero-card,
+      .hero-aside,
       .section,
-      .metric,
-      .code {
-        border-radius: 18px;
+      .signal,
+      .code,
+      .quote,
+      .table-card {
+        border-radius: 22px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="nav">
-      <div class="brand">LithicDB</div>
+  <div class="shell">
+    <nav class="nav">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <span>LithicDB</span>
+      </div>
       <div class="nav-links">
-        <a href="https://github.com/deadsec07/lithicdb">GitHub</a>
+        <a href="#why">Why it exists</a>
         <a href="#architecture">Architecture</a>
         <a href="#api">API</a>
+        <a href="https://github.com/deadsec07/lithicdb">GitHub</a>
       </div>
-    </div>
+    </nav>
 
     <section class="hero">
       <div class="hero-copy">
-        <div class="eyebrow">Disk-First Vector Infrastructure</div>
-        <h1>Build retrieval systems without paying the all-RAM tax.</h1>
-        <p class="lead">LithicDB is a disk-first vector database for teams that need ANN search, metadata filtering, online inserts and deletes, and a practical single-node operating model they can actually extend.</p>
-        <div class="actions">
-          <a class="button primary" href="https://github.com/deadsec07/lithicdb">View Repository</a>
-          <a class="button" href="#api">See API</a>
+        <div class="eyebrow">Disk-first vector infrastructure</div>
+        <h1>A serious vector database for teams that do not want to warehouse every embedding in RAM.</h1>
+        <p class="lead">LithicDB is a Rust-built vector database centered on a hybrid graph plus quantized payload design: memory stays focused on routing, filtering, and handles, while normalized vectors live on disk. The result is a practical single-node retrieval engine with online writes, deletes, metadata filtering, and benchmarkable ANN behavior.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://github.com/deadsec07/lithicdb">Read the code</a>
+          <a class="button secondary" href="#quickstart">Run it locally</a>
+          <a class="button" href="https://github.com/deadsec07/lithicdb/releases">Download release</a>
         </div>
+        <div class="hero-footnote">Positioning: LithicDB is not “yet another vector DB” clone. It is built around a different operating assumption: disk is the primary payload tier, memory is the routing tier, and durability plus maintainability matter as much as recall curves.</div>
       </div>
-      <aside class="hero-card">
-        <div class="stack">
-          <div class="stack-item">
-            <strong>Low-memory ANN</strong>
-            Routing graph in memory, compressed vector payload on disk.
-          </div>
-          <div class="stack-item">
-            <strong>Write-friendly</strong>
-            Online inserts, deletes, WAL recovery, and background maintenance.
-          </div>
-          <div class="stack-item">
-            <strong>Operationally usable</strong>
-            CI, GitHub Pages, backups, restore, diagnostics, and simple REST APIs.
-          </div>
+
+      <aside class="hero-aside">
+        <div class="aside-card">
+          <strong>Technical edge</strong>
+          <span>Cluster-graph routing in memory, `q8` candidate scoring from disk-resident payload blocks, exact cosine reranking from normalized `f32` vectors.</span>
+        </div>
+        <div class="aside-card">
+          <strong>Operational edge</strong>
+          <span>WAL recovery, checksummed log frames, manifest-published generations, compaction, backups, restore, CI, Pages, and release artifacts.</span>
+        </div>
+        <div class="aside-card">
+          <strong>Product edge</strong>
+          <span>Easy to understand, easy to extend, and benchmarkable against brute-force cosine from the same collection state.</span>
         </div>
       </aside>
     </section>
 
-    <section class="grid">
-      <div class="metric">
-        <div class="value">Disk-First</div>
-        <p>Vectors stay in generation files on disk while the in-memory footprint stays centered on routing, filters, and handles.</p>
+    <section class="signals">
+      <div class="signal">
+        <div class="label">Memory profile</div>
+        <div class="value">Low-RAM</div>
+        <p>Payload vectors stay on disk. RAM is spent on centroids, cluster graph edges, metadata postings, numeric indexes, and document handles.</p>
       </div>
-      <div class="metric">
-        <div class="value">ANN + Filters</div>
-        <p>Hybrid graph search with exact and range-aware metadata filtering, plus brute-force cosine benchmarking from the same storage state.</p>
+      <div class="signal">
+        <div class="label">Write model</div>
+        <div class="value">Online</div>
+        <p>Insert and delete without rebuilding the entire index. Recovery comes from WAL replay and periodic state snapshots.</p>
       </div>
-      <div class="metric">
-        <div class="value">Rust Core</div>
-        <p>Single-repo Rust implementation with no dependency on external vector database engines or FAISS-class ANN cores.</p>
+      <div class="signal">
+        <div class="label">Search path</div>
+        <div class="value">ANN + rerank</div>
+        <p>Route through centroid graph, scan candidate clusters with quantized cosine, then exact-rerank from `f32` storage.</p>
       </div>
-    </section>
-
-    <section class="two-col" id="architecture">
-      <div class="section">
-        <h2>Why It Exists</h2>
-        <p>Pinecone, Qdrant, Weaviate, and Milvus set the bar, but there is still room for a sharply positioned single-node product built around lower memory pressure and straightforward operational control.</p>
-        <ul>
-          <li>Compressed payload vectors live on disk.</li>
-          <li>Graph routing and metadata indexes stay in memory.</li>
-          <li>WAL, diagnostics, backup/restore, and generation publishing are built into the repo.</li>
-        </ul>
-      </div>
-      <div class="section" id="api">
-        <h2>What You Get</h2>
-        <ul>
-          <li>Create collections with fixed dimensions.</li>
-          <li>Insert, delete, fetch, and search vectors through REST.</li>
-          <li>Filter with exact terms and numeric ranges.</li>
-          <li>Run CI on pushes to <code>main</code> and publish this page through GitHub Pages.</li>
-        </ul>
+      <div class="signal">
+        <div class="label">Product posture</div>
+        <div class="value">Single-node alpha</div>
+        <p>Good for demos, local deployment, product validation, and as a base to harden into a differentiated storage product.</p>
       </div>
     </section>
 
-    <div class="code">POST /collections/docs/search
-{
-  "vector": [1.0, 0.0, 0.0],
-  "k": 5,
-  "filter": {
-    "must": [
-      { "op": "eq", "field": "category", "value": "finance" },
-      { "op": "range", "field": "price", "gte": 20.0, "lte": 30.0 }
-    ]
-  },
-  "entry_points": 4,
-  "ef_search": 24,
-  "probe_clusters": 12
-}</div>
+    <div class="layout">
+      <section class="split" id="why">
+        <article class="section">
+          <h2>Why teams would choose LithicDB</h2>
+          <p>Most vector databases implicitly optimize for the fully in-memory case. LithicDB starts from a different constraint: many retrieval systems want predictable single-node cost, can tolerate approximate search plus reranking, and care more about operational simplicity than absolute leaderboard recall.</p>
+          <ul class="dense-list">
+            <li>It lowers memory pressure by keeping the full payload on disk.</li>
+            <li>It still supports approximate nearest neighbor search with a real routing structure.</li>
+            <li>It supports online inserts, deletes, filtering, and recovery rather than being a static benchmark toy.</li>
+            <li>It is benchmarkable against brute-force cosine from the exact same collection state.</li>
+          </ul>
+        </article>
 
-    <div class="footer">
-      LithicDB is positioned as an extendable vector database foundation: benchmarkable today, marketable tomorrow.
+        <article class="quote">
+          <h2>Product thesis</h2>
+          <p><strong>Who it is for:</strong> teams building RAG, semantic search, and recommendation systems that want a credible single-node vector engine they can own and extend.</p>
+          <p><strong>Why they would choose it:</strong> lower memory footprint, transparent architecture, and an operational model that is easier to reason about than a large distributed system.</p>
+          <p><strong>Tradeoffs:</strong> LithicDB accepts that it will not beat mature all-memory HNSW systems on every recall/latency frontier. Its advantage is cost shape, control, and extensibility.</p>
+        </article>
+      </section>
+
+      <section class="section" id="architecture">
+        <h2>How the engine is laid out</h2>
+        <p>The design intentionally separates routing from payload so the database can search intelligently without paying the all-memory tax.</p>
+        <div class="diagram">
+          <div class="diagram-row">
+            <div class="diagram-label">Routing layer</div>
+            <div class="diagram-bar">Compact in-memory graph over cluster centroids. Search starts here to reduce the amount of disk payload each query has to touch.</div>
+          </div>
+          <div class="diagram-row">
+            <div class="diagram-label">Approx layer</div>
+            <div class="diagram-bar">Candidate vectors are read from `vectors.q8` and scored with quantized cosine to prune aggressively with lower bandwidth and CPU cost.</div>
+          </div>
+          <div class="diagram-row">
+            <div class="diagram-label">Exact layer</div>
+            <div class="diagram-bar">Final candidates are reranked from normalized `vectors.f32` storage to recover precision before returning results.</div>
+          </div>
+          <div class="diagram-row">
+            <div class="diagram-label">Durability layer</div>
+            <div class="diagram-bar">WAL frames, snapshots, manifest-published generations, compaction, and background maintenance make the engine restart-safe and extendable.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="split">
+        <article class="table-card">
+          <h2>What makes it different</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>LithicDB posture</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Payload residence</td>
+                <td>Disk-first by design, not as an afterthought.</td>
+              </tr>
+              <tr>
+                <td>ANN core</td>
+                <td>Hybrid centroid graph plus quantized block scan, then exact rerank.</td>
+              </tr>
+              <tr>
+                <td>Updates</td>
+                <td>Supports online inserts and deletes with WAL-backed state.</td>
+              </tr>
+              <tr>
+                <td>Filtering</td>
+                <td>Exact metadata postings plus numeric range filtering support.</td>
+              </tr>
+              <tr>
+                <td>Benchmarking</td>
+                <td>Brute-force cosine and ANN comparison live in the same repo.</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="section">
+          <h2>Search path in one pass</h2>
+          <ul class="dense-list">
+            <li>Normalize the incoming query vector.</li>
+            <li>Traverse the centroid graph from one or more entry points.</li>
+            <li>Select promising clusters using best-first expansion.</li>
+            <li>Apply exact and numeric metadata filters to candidate docs.</li>
+            <li>Score the reduced set against `q8` compressed payloads.</li>
+            <li>Rerank the best candidates from normalized `f32` disk vectors.</li>
+          </ul>
+          <div class="code">query
+  -> normalize
+  -> graph route over centroids
+  -> filter candidate docs
+  -> q8 approximate cosine
+  -> top-N shortlist
+  -> exact cosine rerank
+  -> results</div>
+        </article>
+      </section>
+
+      <section class="split">
+        <article class="section" id="api">
+          <h2>API surface</h2>
+          <p>LithicDB exposes a simple REST API intended for direct product integration and easy local testing.</p>
+          <ul class="dense-list">
+            <li>`POST /collections` to create a collection with a fixed dimension.</li>
+            <li>`POST /collections/:name/vectors` to insert vectors with metadata.</li>
+            <li>`DELETE /collections/:name/vectors/:id` to delete by external id.</li>
+            <li>`POST /collections/:name/search` to run ANN search with optional filters.</li>
+            <li>`GET /collections/:name/vectors/:id` to fetch original payload by id.</li>
+            <li>`GET /healthz` for process health.</li>
+          </ul>
+        </article>
+
+        <article class="code" id="quickstart">cargo run --release -- \
+  --data-dir ./data \
+  --bind 127.0.0.1:8080
+
+curl -X POST http://127.0.0.1:8080/collections \
+  -H 'content-type: application/json' \
+  -d '{
+    "name":"docs",
+    "dimension":128,
+    "max_cluster_size":256,
+    "graph_degree":8
+  }'
+
+cargo run --release --bin benchmark -- \
+  --data-dir ./data/bench \
+  --vectors 100000 \
+  --dimension 128 \
+  --queries 200 \
+  --k 10</article>
+      </section>
+
+      <section class="cta">
+        <article class="section">
+          <h2>What you can do with it today</h2>
+          <ul class="dense-list">
+            <li>Run a local retrieval backend for prototype or internal search workloads.</li>
+            <li>Benchmark ANN quality versus brute-force cosine on synthetic data.</li>
+            <li>Use the repo as a product kernel for a disk-first vector service.</li>
+            <li>Extend the engine toward segment compaction, stronger quantization, and replication.</li>
+          </ul>
+        </article>
+
+        <article class="section">
+          <h2>Explore the project</h2>
+          <p>The GitHub repo includes the Rust engine, benchmark binary, tests, release workflow, and the roadmap for turning this into a stronger commercial storage product.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://github.com/deadsec07/lithicdb">Open repository</a>
+            <a class="button" href="https://github.com/deadsec07/lithicdb/releases">Open releases</a>
+          </div>
+        </article>
+      </section>
     </div>
+
+    <div class="footer">LithicDB | Rust vector database | disk-first ANN | low-memory architecture | github.com/deadsec07/lithicdb</div>
   </div>
 </body>
 </html>
