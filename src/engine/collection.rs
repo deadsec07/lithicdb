@@ -3,8 +3,8 @@ use crate::index::quantizer::{cosine, cosine_quantized, normalize, quantize_norm
 use crate::models::api::VectorRecord;
 use crate::models::types::{
     ActiveSegmentManifest, ClusterNode, CollectionDiagnostics, CollectionManifest,
-    CollectionSnapshot, CollectionStats, DocumentRecord, GenerationCatalog, MetadataFilter,
-    SearchHit, SearchResult, SearchStats, WalOp,
+    CollectionSnapshot, CollectionStats, DocumentRecord, FetchedRecord, GenerationCatalog,
+    MetadataFilter, SearchHit, SearchResult, SearchStats, WalOp,
 };
 use crate::storage::files::{
     append_f32_vector, append_i8_vector, append_log_entry, default_active_manifest, file_len,
@@ -207,7 +207,7 @@ impl Collection {
         Ok(deleted)
     }
 
-    pub fn fetch(&self, external_id: &str) -> Result<Option<(Vec<f32>, HashMap<String, String>)>> {
+    pub fn fetch(&self, external_id: &str) -> Result<Option<FetchedRecord>> {
         let _lease = self.begin_read();
         let Some(doc_id) = self.external_to_doc.get(external_id).copied() else {
             return Ok(None);

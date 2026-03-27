@@ -1,6 +1,6 @@
 use crate::engine::collection::Collection;
 use crate::models::api::{CreateCollectionRequest, SearchRequest, VectorRecord};
-use crate::models::types::{CollectionDiagnostics, CollectionStats, SearchResult};
+use crate::models::types::{CollectionDiagnostics, CollectionStats, FetchedRecord, SearchResult};
 use anyhow::{bail, Context, Result};
 use parking_lot::RwLock;
 use std::collections::HashMap;
@@ -75,11 +75,7 @@ impl Database {
         guard.delete(id)
     }
 
-    pub fn fetch_vector(
-        &self,
-        collection: &str,
-        id: &str,
-    ) -> Result<Option<(Vec<f32>, HashMap<String, String>)>> {
+    pub fn fetch_vector(&self, collection: &str, id: &str) -> Result<Option<FetchedRecord>> {
         let collection = self.get_collection(collection)?;
         let guard = collection.read();
         guard.fetch(id)

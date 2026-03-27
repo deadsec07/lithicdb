@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 
 pub type Metadata = HashMap<String, String>;
+pub type FetchedRecord = (Vec<f32>, Metadata);
+pub type RangePredicateView<'a> = (&'a str, Option<f64>, Option<f64>, Option<f64>, Option<f64>);
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -64,9 +66,7 @@ impl MetadataFilter {
         }
     }
 
-    pub fn range_predicates(
-        &self,
-    ) -> Vec<(&str, Option<f64>, Option<f64>, Option<f64>, Option<f64>)> {
+    pub fn range_predicates(&self) -> Vec<RangePredicateView<'_>> {
         match self {
             Self::Empty | Self::ExactMap(_) => Vec::new(),
             Self::Structured(filter) => filter

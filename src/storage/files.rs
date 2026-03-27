@@ -80,6 +80,7 @@ pub fn open_append(path: &Path) -> Result<File> {
 pub fn open_rw(path: &Path) -> Result<File> {
     Ok(OpenOptions::new()
         .create(true)
+        .truncate(false)
         .read(true)
         .write(true)
         .open(path)?)
