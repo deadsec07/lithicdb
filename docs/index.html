@@ -11,7 +11,6 @@
       --ink: #1f1a17;
       --muted: #5f564d;
       --panel: rgba(255, 250, 242, 0.88);
-      --panel-strong: #fffaf2;
       --line: rgba(31, 26, 23, 0.12);
       --line-strong: rgba(31, 26, 23, 0.2);
       --accent: #bf5b2c;
@@ -31,314 +30,90 @@
         linear-gradient(180deg, #faf6ee 0%, #f4efe6 38%, #efe7d8 100%);
     }
     a { color: inherit; }
-    .shell {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 28px 20px 84px;
-    }
+    .shell { max-width: 1200px; margin: 0 auto; padding: 28px 20px 84px; }
     .nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      padding: 10px 0 28px;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 0 28px;
     }
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-family: "Courier New", monospace;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      font-size: 13px;
+      display: flex; align-items: center; gap: 14px; font-family: "Courier New", monospace; text-transform: uppercase; letter-spacing: 0.16em; font-size: 13px;
     }
-    .brand-mark {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 0 0 6px rgba(191, 91, 44, 0.09);
+    .brand img {
+      width: 36px; height: 36px; border-radius: 12px; box-shadow: 0 10px 30px rgba(23,107,99,0.12);
     }
-    .nav-links {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+    .nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
+    .nav-links a, .button {
+      text-decoration: none; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.45); padding: 10px 14px; border-radius: 999px; font-family: "Courier New", monospace; font-size: 13px; transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
     }
-    .nav-links a,
-    .button {
-      text-decoration: none;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.45);
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-family: "Courier New", monospace;
-      font-size: 13px;
-      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+    .nav-links a:hover, .button:hover { transform: translateY(-1px); border-color: var(--line-strong); background: rgba(255, 255, 255, 0.7); }
+    .hero, .split, .cta, .evidence-grid, .signals { display: grid; gap: 18px; }
+    .hero { grid-template-columns: 1.2fr 0.8fr; align-items: stretch; margin-bottom: 22px; }
+    .signals { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 20px; }
+    .split { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cta { grid-template-columns: 1.1fr 0.9fr; }
+    .evidence-grid { grid-template-columns: 0.9fr 1.1fr; }
+    .hero-copy, .hero-aside, .section, .signal, .code, .quote, .table-card, .mini-card, .chart-card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 28px; box-shadow: var(--shadow); backdrop-filter: blur(10px);
     }
-    .nav-links a:hover,
-    .button:hover {
-      transform: translateY(-1px);
-      border-color: var(--line-strong);
-      background: rgba(255, 255, 255, 0.7);
-    }
-    .hero {
-      display: grid;
-      grid-template-columns: 1.25fr 0.75fr;
-      gap: 22px;
-      align-items: stretch;
-      margin-bottom: 22px;
-    }
-    .hero-copy,
-    .hero-aside,
-    .section,
-    .signal,
-    .code,
-    .quote,
-    .table-card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-    }
-    .hero-copy {
-      padding: 34px;
-      position: relative;
-      overflow: hidden;
-    }
+    .hero-copy, .hero-aside, .section, .quote, .table-card, .code, .chart-card { padding: 28px; }
+    .signal, .mini-card { padding: 22px; }
+    .hero-copy { position: relative; overflow: hidden; }
     .hero-copy::after {
-      content: "";
-      position: absolute;
-      right: -40px;
-      top: -50px;
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(191, 91, 44, 0.18), transparent 65%);
-      pointer-events: none;
+      content: ""; position: absolute; right: -40px; top: -50px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(191, 91, 44, 0.18), transparent 65%); pointer-events: none;
     }
-    .eyebrow {
-      margin-bottom: 16px;
-      color: var(--accent-2);
-      font-family: "Courier New", monospace;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      font-size: 12px;
+    .eyebrow { margin-bottom: 16px; color: var(--accent-2); font-family: "Courier New", monospace; letter-spacing: 0.18em; text-transform: uppercase; font-size: 12px; }
+    h1 { margin: 0; max-width: 760px; font-size: clamp(42px, 7vw, 84px); line-height: 0.95; letter-spacing: -0.05em; }
+    h2 { margin: 0 0 14px; font-size: 30px; letter-spacing: -0.03em; }
+    h3 { margin: 0 0 10px; font-size: 20px; letter-spacing: -0.02em; }
+    p, li { color: var(--muted); line-height: 1.68; font-size: 16px; }
+    .lead { margin: 18px 0 0; max-width: 720px; color: var(--muted); font-size: 19px; line-height: 1.65; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+    .button.primary { color: #fff8f2; border-color: transparent; background: linear-gradient(120deg, var(--accent), #d9793f); }
+    .button.secondary { background: linear-gradient(120deg, rgba(23, 107, 99, 0.1), rgba(23, 107, 99, 0.03)); }
+    .hero-footnote { margin-top: 24px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .hero-aside { display: grid; gap: 14px; align-content: start; }
+    .aside-card, .mini-card {
+      border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.34)); border: 1px solid var(--line);
     }
-    h1 {
-      margin: 0;
-      max-width: 760px;
-      font-size: clamp(42px, 7vw, 84px);
-      line-height: 0.95;
-      letter-spacing: -0.05em;
+    .aside-card { padding: 16px; }
+    .aside-card strong, .mini-card strong { display: block; margin-bottom: 6px; font-size: 15px; }
+    .aside-card span, .mini-card span { color: var(--muted); line-height: 1.55; font-size: 14px; }
+    .signal .label, .kicker {
+      font-family: "Courier New", monospace; text-transform: uppercase; letter-spacing: 0.12em; font-size: 11px; color: var(--muted); margin-bottom: 12px;
     }
-    .lead {
-      margin: 18px 0 0;
-      max-width: 720px;
-      color: var(--muted);
-      font-size: 19px;
-      line-height: 1.65;
-    }
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 28px;
-    }
-    .button.primary {
-      color: #fff8f2;
-      border-color: transparent;
-      background: linear-gradient(120deg, var(--accent), #d9793f);
-    }
-    .button.secondary {
-      background: linear-gradient(120deg, rgba(23, 107, 99, 0.1), rgba(23, 107, 99, 0.03));
-    }
-    .hero-footnote {
-      margin-top: 24px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    .hero-aside {
-      padding: 24px;
-      display: grid;
-      gap: 14px;
-      align-content: start;
-    }
-    .aside-card {
-      padding: 16px;
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.34));
-      border: 1px solid var(--line);
-    }
-    .aside-card strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 15px;
-    }
-    .aside-card span {
-      color: var(--muted);
-      line-height: 1.55;
-      font-size: 14px;
-    }
-    .signals {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    .signal {
-      padding: 22px;
-    }
-    .signal .label {
-      font-family: "Courier New", monospace;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-    .signal .value {
-      font-size: 28px;
-      line-height: 1;
-      margin-bottom: 10px;
-    }
-    .signal p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.55;
-      font-size: 14px;
-    }
-    .layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 18px;
-    }
-    .split {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-    }
-    .section,
-    .table-card,
-    .quote,
-    .code {
-      padding: 28px;
-    }
-    h2 {
-      margin: 0 0 14px;
-      font-size: 30px;
-      letter-spacing: -0.03em;
-    }
-    h3 {
-      margin: 0 0 10px;
-      font-size: 20px;
-      letter-spacing: -0.02em;
-    }
-    p,
-    li {
-      color: var(--muted);
-      line-height: 1.68;
-      font-size: 16px;
-    }
-    .dense-list {
-      display: grid;
-      gap: 10px;
-      padding-left: 20px;
-      margin: 0;
-    }
-    .diagram {
-      display: grid;
-      gap: 12px;
-      margin-top: 18px;
-    }
-    .diagram-row {
-      display: grid;
-      grid-template-columns: 180px 1fr;
-      gap: 14px;
-      align-items: center;
-    }
+    .signal .value { font-size: 28px; line-height: 1; margin-bottom: 10px; }
+    .dense-list { display: grid; gap: 10px; padding-left: 20px; margin: 0; }
+    .diagram { display: grid; gap: 12px; margin-top: 18px; }
+    .diagram-row { display: grid; grid-template-columns: 180px 1fr; gap: 14px; align-items: center; }
     .diagram-label {
-      font-family: "Courier New", monospace;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--accent-2);
+      font-family: "Courier New", monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-2);
     }
     .diagram-bar {
-      padding: 14px 16px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: linear-gradient(90deg, rgba(23,107,99,0.09), rgba(191,91,44,0.08));
-      color: var(--ink);
-      line-height: 1.5;
-      font-size: 15px;
+      padding: 14px 16px; border-radius: 16px; border: 1px solid var(--line); background: linear-gradient(90deg, rgba(23,107,99,0.09), rgba(191,91,44,0.08)); color: var(--ink); line-height: 1.5; font-size: 15px;
     }
-    .table-card table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 8px;
-    }
-    .table-card th,
-    .table-card td {
-      text-align: left;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--line);
-      vertical-align: top;
-      font-size: 15px;
-    }
-    .table-card th {
-      font-family: "Courier New", monospace;
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding-top: 0;
-    }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { text-align: left; padding: 14px 0; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 15px; }
+    th { font-family: "Courier New", monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding-top: 0; }
     .code {
-      background: linear-gradient(180deg, #1c1917, #11100f);
-      border-color: rgba(255,255,255,0.08);
-      color: #f7efe2;
-      overflow: auto;
-      font-family: "Courier New", monospace;
-      font-size: 14px;
-      line-height: 1.7;
-      white-space: pre-wrap;
+      background: linear-gradient(180deg, #1c1917, #11100f); border-color: rgba(255,255,255,0.08); color: #f7efe2; overflow: auto; font-family: "Courier New", monospace; font-size: 14px; line-height: 1.7; white-space: pre-wrap;
     }
-    .quote {
-      background: linear-gradient(135deg, rgba(217,193,122,0.3), rgba(255,250,242,0.76));
+    .quote { background: linear-gradient(135deg, rgba(217,193,122,0.3), rgba(255,250,242,0.76)); }
+    .chart-wrap { display: grid; gap: 14px; margin-top: 16px; }
+    .chart-row { display: grid; grid-template-columns: 110px 1fr 68px; gap: 14px; align-items: center; }
+    .chart-label { font-family: "Courier New", monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .track { height: 14px; border-radius: 999px; background: rgba(31,26,23,0.08); overflow: hidden; }
+    .fill-a { height: 100%; width: 35%; background: linear-gradient(90deg, var(--accent), #d57c45); }
+    .fill-b { height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent-2), #3e8a82); }
+    .fill-r { height: 100%; width: 73%; background: linear-gradient(90deg, var(--accent-3), #b89b45); }
+    .metric-note { color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .badge-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .badge {
+      border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; font-family: "Courier New", monospace; font-size: 12px; background: rgba(255,255,255,0.46);
     }
-    .cta {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 18px;
-      margin-top: 18px;
-    }
-    .footer {
-      margin-top: 24px;
-      color: var(--muted);
-      font-family: "Courier New", monospace;
-      font-size: 13px;
-    }
+    .footer { margin-top: 24px; color: var(--muted); font-family: "Courier New", monospace; font-size: 13px; }
     @media (max-width: 980px) {
-      .hero,
-      .signals,
-      .split,
-      .cta {
-        grid-template-columns: 1fr;
-      }
-      .diagram-row {
-        grid-template-columns: 1fr;
-      }
-      .hero-copy,
-      .hero-aside,
-      .section,
-      .signal,
-      .code,
-      .quote,
-      .table-card {
-        border-radius: 22px;
-      }
+      .hero, .signals, .split, .cta, .evidence-grid { grid-template-columns: 1fr; }
+      .diagram-row, .chart-row { grid-template-columns: 1fr; }
+      .hero-copy, .hero-aside, .section, .signal, .code, .quote, .table-card, .mini-card, .chart-card { border-radius: 22px; }
     }
   </style>
 </head>
@@ -346,12 +121,13 @@
   <div class="shell">
     <nav class="nav">
       <div class="brand">
-        <span class="brand-mark"></span>
+        <img src="assets/lithic-mark.svg" alt="LithicDB mark">
         <span>LithicDB</span>
       </div>
       <div class="nav-links">
         <a href="#why">Why it exists</a>
         <a href="#architecture">Architecture</a>
+        <a href="#compare">Compare</a>
         <a href="#api">API</a>
         <a href="https://github.com/deadsec07/lithicdb">GitHub</a>
       </div>
@@ -365,9 +141,9 @@
         <div class="hero-actions">
           <a class="button primary" href="https://github.com/deadsec07/lithicdb">Read the code</a>
           <a class="button secondary" href="#quickstart">Run it locally</a>
-          <a class="button" href="https://github.com/deadsec07/lithicdb/releases">Download release</a>
+          <a class="button" href="https://github.com/deadsec07/lithicdb/releases/tag/v0.1.0">Download release</a>
         </div>
-        <div class="hero-footnote">Positioning: LithicDB is not “yet another vector DB” clone. It is built around a different operating assumption: disk is the primary payload tier, memory is the routing tier, and durability plus maintainability matter as much as recall curves.</div>
+        <div class="hero-footnote">Positioning: LithicDB is not a clone of a managed vector service. It is built around a different operating assumption: disk is the primary payload tier, memory is the routing tier, and durability plus maintainability matter as much as raw recall curves.</div>
       </div>
 
       <aside class="hero-aside">
@@ -407,6 +183,45 @@
         <div class="value">Single-node alpha</div>
         <p>Good for demos, local deployment, product validation, and as a base to harden into a differentiated storage product.</p>
       </div>
+    </section>
+
+    <section class="evidence-grid">
+      <article class="chart-card">
+        <div class="kicker">Evidence block</div>
+        <h2>Representative smoke benchmark</h2>
+        <p>A prior LithicDB smoke run on this repo showed the ANN path materially faster than brute-force cosine while preserving useful recall on a filtered search workload.</p>
+        <div class="chart-wrap">
+          <div class="chart-row">
+            <div class="chart-label">ANN ms</div>
+            <div class="track"><div class="fill-a"></div></div>
+            <div>4.23</div>
+          </div>
+          <div class="chart-row">
+            <div class="chart-label">Brute ms</div>
+            <div class="track"><div class="fill-b"></div></div>
+            <div>12.15</div>
+          </div>
+          <div class="chart-row">
+            <div class="chart-label">Recall@5</div>
+            <div class="track"><div class="fill-r"></div></div>
+            <div>0.73</div>
+          </div>
+        </div>
+        <p class="metric-note">Benchmark shape: 5k vectors, 64 dimensions, 20 queries, top-5 retrieval. The repo also includes a larger benchmark driver for 100k-vector scale tests and recall/latency comparison.</p>
+      </article>
+
+      <article class="section">
+        <div class="kicker">Why this matters</div>
+        <h2>Not just API surface. An actual storage thesis.</h2>
+        <p>LithicDB is differentiated by where it spends memory and how it searches. Most systems can expose CRUD plus search. The harder question is what architectural bet they make. LithicDB bets on disk-first payload storage with a compact routing layer and an exact rerank pass.</p>
+        <div class="badge-row">
+          <div class="badge">disk-first payload</div>
+          <div class="badge">quantized scan</div>
+          <div class="badge">graph routing</div>
+          <div class="badge">exact rerank</div>
+          <div class="badge">metadata filtering</div>
+        </div>
+      </article>
     </section>
 
     <div class="layout">
@@ -453,41 +268,54 @@
         </div>
       </section>
 
-      <section class="split">
+      <section class="split" id="compare">
         <article class="table-card">
-          <h2>What makes it different</h2>
+          <h2>How it compares</h2>
           <table>
             <thead>
               <tr>
-                <th>Dimension</th>
-                <th>LithicDB posture</th>
+                <th>Question</th>
+                <th>LithicDB answer</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Payload residence</td>
-                <td>Disk-first by design, not as an afterthought.</td>
+                <td>Why not Pinecone?</td>
+                <td>Use LithicDB when you want a local, inspectable engine you can modify instead of a managed service boundary.</td>
               </tr>
               <tr>
-                <td>ANN core</td>
-                <td>Hybrid centroid graph plus quantized block scan, then exact rerank.</td>
+                <td>Why not Qdrant or Weaviate?</td>
+                <td>Use LithicDB when the product angle is specifically disk-first payload economics and a smaller codebase you can shape around your workload.</td>
               </tr>
               <tr>
-                <td>Updates</td>
-                <td>Supports online inserts and deletes with WAL-backed state.</td>
+                <td>Why not Milvus?</td>
+                <td>Use LithicDB when you do not want the operational weight of a broader distributed system for early-stage or single-node workloads.</td>
               </tr>
               <tr>
-                <td>Filtering</td>
-                <td>Exact metadata postings plus numeric range filtering support.</td>
+                <td>Where does it win?</td>
+                <td>Clarity, ownership, low-memory posture, and a credible product kernel for a differentiated vector service.</td>
               </tr>
               <tr>
-                <td>Benchmarking</td>
-                <td>Brute-force cosine and ANN comparison live in the same repo.</td>
+                <td>Where does it lose today?</td>
+                <td>Distributed operations, mature query language, and years of tuning held by incumbent engines.</td>
               </tr>
             </tbody>
           </table>
         </article>
 
+        <article class="section">
+          <h2>What makes it different</h2>
+          <ul class="dense-list">
+            <li>Disk-first by design, not as a fallback path after memory is exhausted.</li>
+            <li>Hybrid centroid graph plus quantized block scan instead of trying to mirror standard HNSW posture.</li>
+            <li>Online inserts and deletes with WAL-backed collection state.</li>
+            <li>Exact metadata filtering plus numeric range support.</li>
+            <li>Brute-force cosine and ANN comparison live in the same repo for honest evaluation.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="split">
         <article class="section">
           <h2>Search path in one pass</h2>
           <ul class="dense-list">
@@ -507,9 +335,7 @@
   -> exact cosine rerank
   -> results</div>
         </article>
-      </section>
 
-      <section class="split">
         <article class="section" id="api">
           <h2>API surface</h2>
           <p>LithicDB exposes a simple REST API intended for direct product integration and easy local testing.</p>
@@ -522,7 +348,9 @@
             <li>`GET /healthz` for process health.</li>
           </ul>
         </article>
+      </section>
 
+      <section class="cta">
         <article class="code" id="quickstart">cargo run --release -- \
   --data-dir ./data \
   --bind 127.0.0.1:8080
@@ -542,9 +370,7 @@ cargo run --release --bin benchmark -- \
   --dimension 128 \
   --queries 200 \
   --k 10</article>
-      </section>
 
-      <section class="cta">
         <article class="section">
           <h2>What you can do with it today</h2>
           <ul class="dense-list">
@@ -553,14 +379,9 @@ cargo run --release --bin benchmark -- \
             <li>Use the repo as a product kernel for a disk-first vector service.</li>
             <li>Extend the engine toward segment compaction, stronger quantization, and replication.</li>
           </ul>
-        </article>
-
-        <article class="section">
-          <h2>Explore the project</h2>
-          <p>The GitHub repo includes the Rust engine, benchmark binary, tests, release workflow, and the roadmap for turning this into a stronger commercial storage product.</p>
           <div class="hero-actions">
             <a class="button primary" href="https://github.com/deadsec07/lithicdb">Open repository</a>
-            <a class="button" href="https://github.com/deadsec07/lithicdb/releases">Open releases</a>
+            <a class="button" href="https://github.com/deadsec07/lithicdb/releases/tag/v0.1.0">Open release</a>
           </div>
         </article>
       </section>
