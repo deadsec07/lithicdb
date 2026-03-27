@@ -1,5 +1,10 @@
 # LithicDB
 
+[![CI](https://github.com/deadsec07/lithicdb/actions/workflows/ci.yml/badge.svg)](https://github.com/deadsec07/lithicdb/actions/workflows/ci.yml)
+[![Pages](https://github.com/deadsec07/lithicdb/actions/workflows/pages.yml/badge.svg)](https://github.com/deadsec07/lithicdb/actions/workflows/pages.yml)
+[![Release](https://github.com/deadsec07/lithicdb/actions/workflows/release.yml/badge.svg)](https://github.com/deadsec07/lithicdb/actions/workflows/release.yml)
+[![Site](https://img.shields.io/badge/site-live-0a7f5a)](https://deadsec07.github.io/lithicdb/)
+
 LithicDB is a disk-first vector database MVP built around a hybrid cluster-graph plus quantized payload design. It targets retrieval teams that want lower memory pressure than fully in-memory HNSW systems while still supporting online writes, deletes, metadata filtering, and benchmarkable ANN search on a single node.
 
 The current build also includes two product-hardening features beyond the initial MVP:
@@ -35,6 +40,31 @@ This gives a useful MVP behavior envelope:
 - Online inserts and deletes
 - Metadata-aware ANN search
 - Brute-force cosine comparison from the same collection state
+
+## Release flow
+
+LithicDB now has a GitHub release workflow that builds installable binaries for Linux, macOS, and Windows whenever you push a semantic version tag.
+
+Standard release path:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+Manual GitHub CLI path:
+
+```bash
+gh release create v0.1.0 --generate-notes
+```
+
+The workflow publishes packaged artifacts containing:
+
+- `lithicdb` server binary
+- `benchmark` binary
+- `README.md`
+
+You can also rerun the workflow manually from GitHub Actions with `workflow_dispatch` and pass an existing tag.
 
 ## Architecture
 
